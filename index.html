@@ -23,6 +23,15 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes fadeOutSlideUp {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-50px); }
+  }
+
+  .fade-out {
+    animation: fadeOutSlideUp 0.5s forwards;
+  }
+
   /* LOGIN */
   #login {
     display: flex;
@@ -83,6 +92,8 @@
     display: flex;
     height: 100vh;
     display: none;
+    opacity:0;
+    transition: opacity 0.5s;
   }
 
   #sidebar {
@@ -202,20 +213,19 @@
 
 <script>
   const USERS = {
-  "Candeleros Jrs": "kyrios+1",
-  "Dragón": "A1jhjc-PPL17@-1289",
-  "Usuario1": "Pass123!",
-  "Usuario2": "Clave@456",
-  "Usuario3": "Secreto#789",
-  "Usuario4": "Prueba_321",
-  "Usuario5": "Test-987",
-  "Usuario6": "Admin@000",
-  "Usuario7": "Guest1234",
-  "Usuario8": "Clave!2025",
-  "Usuario9": "Usuario_09",
-  "Usuario10": "Pass@10"
-};
-
+    "Candeleros Jrs": "1234",
+    "Dragón": "A1jhjc-PPL17@-1289",
+    "Usuario1": "Pass123!",
+    "Usuario2": "Clave@456",
+    "Usuario3": "Secreto#789",
+    "Usuario4": "Prueba_321",
+    "Usuario5": "Test-987",
+    "Usuario6": "Admin@000",
+    "Usuario7": "Guest1234",
+    "Usuario8": "Clave!2025",
+    "Usuario9": "Usuario_09",
+    "Usuario10": "Pass@10"
+  };
 
   const contents = {
     informe1: "Detalle secreto de la operación Sombra...",
@@ -239,12 +249,18 @@
     const password = document.getElementById('password').value.trim();
     const loginDiv = document.getElementById('login');
     const errorDiv = document.getElementById('error');
+    const containerDiv = document.getElementById('container');
 
     if(USERS[username] && USERS[username] === password) {
       errorDiv.textContent = "";
-      loginDiv.style.display = 'none';
-      document.getElementById('container').style.display = 'flex';
-      escribirBienvenida("¡Bienvenido a SIO!");
+      loginDiv.classList.add('fade-out');
+      setTimeout(() => {
+        loginDiv.style.display = 'none';
+        containerDiv.style.display = 'flex';
+        // Aparece con fade in
+        setTimeout(() => containerDiv.style.opacity = 1, 50);
+        escribirBienvenida("¡Bienvenido al sistema!");
+      }, 500);
     } else {
       errorDiv.textContent = "Usuario o contraseña incorrecta";
       document.body.classList.add('shake');
@@ -282,6 +298,7 @@
 
 </body>
 </html>
+
 
 
 
