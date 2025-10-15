@@ -1,221 +1,287 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>SIO</title>
-<style>
-  body {
-    margin: 0;
-    font-family: "Courier New", monospace;
-    background-color: #000;
-    color: #fff;
-    transition: background-color 0.5s;
-  }
-
-  /* LOGIN */
-  #login {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    opacity:0;
-    animation: fadeSlide 1s forwards;
-  }
-
-  input, button {
-    padding: 10px;
-    background-color: #111;
-    border: 1px solid #fff;
-    color: #fff;
-    font-family: "Courier New", monospace;
-  }
-
-  #container {
-    display: flex;
-    height: 100vh;
-    display: none;
-    opacity:0;
-    transition: opacity 0.5s;
-  }
-
-  #sidebar {
-    width: 250px;
-    background-color: #111;
-    padding: 10px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-  }
-
-  #content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-  }
-
-  .folder {
-    cursor: pointer;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    background-color: #1a1a1a;
-    transition: background-color 0.3s;
-  }
-
-  .folder:hover {
-    background-color: #222;
-  }
-
-  .subfolder {
-    padding: 8px 10px;
-    margin: 2px 0;
-    border-radius: 5px;
-    background-color: #151515;
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.4s ease;
-    margin-left: 20px;
-  }
-
-  .folder.open .subfolder {
-    max-height: 100px;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Botón menú para móvil */
-  #menu-btn {
-    display: none;
-    background-color: #111;
-    color: #fff;
-    border: 1px solid #fff;
-    padding: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1001;
-  }
-
-  /* Fondo oscuro cuando se abre el menú */
-  #overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
-  }
-
-  /* SOLO cambia en pantallas chicas */
-  @media (max-width: 768px) {
-    #menu-btn {
-      display: block;
+  <meta charset="UTF-8">
+  <title>SIO</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Courier New", monospace;
+      background-color: #000;
+      color: #fff;
+      transition: background-color 0.5s;
     }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-15px, 0); }
+      20%, 40%, 60%, 80% { transform: translate(15px, 0); }
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOutSlideUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
+
+    .fade-out { animation: fadeOutSlideUp 0.5s forwards; }
+
+    #login {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      opacity: 0;
+      animation: fadeSlide 1s forwards;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+
+    input {
+      padding: 10px;
+      background-color: #111;
+      border: 1px solid #fff;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      outline: none;
+    }
+
+    #username { width: 220px; }
+    #password { width: 200px; margin-right: 5px; }
+
+    .password-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-password {
+      cursor: pointer;
+      user-select: none;
+      color: #fff;
+      padding: 5px;
+      border: 1px solid #fff;
+      background-color: #111;
+    }
+
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #111;
+      border: 1px solid #fff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover { background-color: #222; }
+
+    #error {
+      color: red;
+      margin-top: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #container {
+      display: flex;
+      height: 100vh;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
     #sidebar {
+      width: 250px;
+      background-color: #111;
+      padding: 10px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .folder {
+      cursor: pointer;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      background-color: #1a1a1a;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .folder:hover { background-color: #222; }
+
+    .subfolder {
+      padding: 8px 10px;
+      margin: 2px 0;
+      border-radius: 5px;
+      background-color: #151515;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.4s ease;
+      margin-left: 20px;
+    }
+
+    .folder.open .subfolder {
+      max-height: 100px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .subfolder:hover { background-color: #222; }
+
+    #content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    h2 { margin-top: 0; }
+
+    #editable {
+      background-color: #000;
+      border: 1px solid #fff;
+      padding: 10px;
+      min-height: 200px;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    .bienvenida {
+      font-size: 1.5rem;
+      white-space: pre-wrap;
+      overflow: hidden;
+    }
+
+    .shake { animation: shake 0.4s; }
+
+    #menu-btn {
+      display: none;
+      background-color: #111;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1001;
+    }
+
+    #overlay {
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
       height: 100%;
-      transform: translateX(-100%);
-      z-index: 1002;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
     }
-    #sidebar.active {
-      transform: translateX(0);
-    }
-    #content {
-      padding-top: 60px;
-    }
-    #overlay.active {
-      display: block;
-    }
-  }
 
-  @keyframes fadeSlide {
-    0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+    @media (max-width: 768px) {
+      #login input, #login button {
+        font-size: 18px;
+        width: 80%;
+        max-width: 300px;
+      }
 
-  .bienvenida {
-    font-size: 1.5rem;
-  }
-</style>
+      #menu-btn {
+        display: block;
+      }
+
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+        z-index: 1002;
+      }
+
+      #sidebar.active {
+        transform: translateX(0);
+      }
+
+      #content {
+        padding-top: 60px;
+      }
+
+      #overlay.active {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- LOGIN -->
-  <div id="login">
+
+  <div id="login" class="fade-slide">
     <h2>SIO</h2>
-    <input type="text" id="username" placeholder="Usuario">
-    <input type="password" id="password" placeholder="Contraseña">
+    <div class="input-row">
+      <input type="text" id="username" placeholder="Usuario">
+    </div>
+    <div class="input-row password-container">
+      <input type="password" id="password" placeholder="Contraseña">
+      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    </div>
     <button onclick="login()">Entrar</button>
     <p id="error"></p>
   </div>
 
-  <!-- BASE DE DATOS -->
   <div id="container">
     <button id="menu-btn" onclick="toggleMenu()">☰</button>
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <div id="sidebar">
-      <div class="folder" onclick="toggleFolder(this)">Espionaje
+      <div class="folder" onclick="toggleFolder(this)">
+        Espionaje
         <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
         <div class="subfolder" onclick="showContent('informe2','Infiltración Nocturna')">Infiltración Nocturna</div>
+        <div class="subfolder" onclick="showContent('informe9','Observación Urbana')">Observación Urbana</div>
       </div>
-      <div class="folder" onclick="toggleFolder(this)">Proyectos
+
+      <div class="folder" onclick="toggleFolder(this)">
+        Proyectos
         <div class="subfolder" onclick="showContent('informe3','Proyecto Fénix')">Proyecto Fénix</div>
+        <div class="subfolder" onclick="showContent('informe4','Proyecto Lobo')">Proyecto Lobo</div>
+        <div class="subfolder" onclick="showContent('informe10','Proyecto Águila')">Proyecto Águila</div>
+      </div>
+
+      <div class="folder" onclick="toggleFolder(this)">
+        Miembros
+        <div class="subfolder" onclick="showContent('informe5','Agente X')">Agente X</div>
+        <div class="subfolder" onclick="showContent('informe6','Agente Y')">Agente Y</div>
+        <div class="subfolder" onclick="showContent('informe11','Agente Z')">Agente Z</div>
+      </div>
+
+      <div class="folder" onclick="toggleFolder(this)">
+        Confidencial
+        <div class="subfolder" onclick="showContent('informe7','Archivo Romeo')">Archivo Romeo</div>
+        <div class="subfolder" onclick="showContent('informe8','Archivo Beta')">Archivo Beta</div>
+        <div class="subfolder" onclick="showContent('informe12','Archivo Gamma')">Archivo Gamma</div>
+      </div>
+
+      <div class="folder" onclick="toggleFolder(this)">
+        Propuestas
+        <div class="subfolder" onclick="showContent('informe13','Manual de Procedimientos')">Manual de Procedimientos</div>
+        <div class="subfolder" onclick="showContent('informe14','Guía de Operaciones')">Guía de Operaciones</div>
       </div>
     </div>
 
     <div id="content">
-      <div id="bienvenida" class="bienvenida"></div>
-    </div>
-  </div>
 
-  <script>
-    const USERS = { "Candeleros Jrs": "kyrios+1" };
-    const contents = { informe1: "Detalle secreto de la operación Sombra...", informe2: "Plan de infiltración nocturna...", informe3: "Documentación inicial del Proyecto Fénix." };
-
-    function login() {
-      const u = username.value.trim(), p = password.value.trim();
-      if(USERS[u] === p){
-        document.getElementById('login').style.display = 'none';
-        const c = document.getElementById('container');
-        c.style.display = 'flex';
-        setTimeout(()=>c.style.opacity=1,50);
-        escribirBienvenida("¡Bienvenido al sistema!");
-      } else error.textContent = "Usuario o contraseña incorrecta";
-    }
-
-    function toggleFolder(f){ f.classList.toggle("open"); }
-    function showContent(id, titulo){
-      content.innerHTML = `<h2>${titulo}</h2><div id="editable" contenteditable="true">${contents[id]}</div>`;
-      toggleMenu(false);
-    }
-    function escribirBienvenida(txt){
-      const d = document.getElementById('bienvenida');
-      d.textContent = "";
-      let i=0;
-      const interval=setInterval(()=>{
-        d.textContent += txt.charAt(i++);
-        if(i>=txt.length) clearInterval(interval);
-      },100);
-    }
-    function toggleMenu(force){
-      const s=document.getElementById('sidebar');
-      const o=document.getElementById('overlay');
-      if(force===false){ s.classList.remove('active'); o.classList.remove('active'); return; }
-      s.classList.toggle('active');
-      o.classList.toggle('active');
-    }
-  </script>
-</body>
-</html>
 
 
 
