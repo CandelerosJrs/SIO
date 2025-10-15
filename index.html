@@ -19,7 +19,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    opacity: 0;
+    opacity:0;
     animation: fadeSlide 1s forwards;
   }
 
@@ -29,15 +29,14 @@
     border: 1px solid #fff;
     color: #fff;
     font-family: "Courier New", monospace;
-    margin-top: 5px;
   }
 
   #container {
-    display: none;
-    height: 100vh;
-    opacity: 0;
-    transition: opacity 0.5s;
     display: flex;
+    height: 100vh;
+    display: none;
+    opacity:0;
+    transition: opacity 0.5s;
   }
 
   #sidebar {
@@ -46,6 +45,7 @@
     padding: 10px;
     box-sizing: border-box;
     overflow-y: auto;
+    transition: transform 0.3s ease;
   }
 
   #content {
@@ -86,14 +86,55 @@
     transform: translateY(0);
   }
 
-  #editable {
-    background-color:#000;
-    border:1px solid #fff;
-    padding:10px;
-    min-height:200px;
-    color:#fff;
-    font-family:"Courier New", monospace;
-    white-space: pre-wrap;
+  /* Botón menú para móvil */
+  #menu-btn {
+    display: none;
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+  }
+
+  /* Fondo oscuro cuando se abre el menú */
+  #overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+
+  /* SOLO cambia en pantallas chicas */
+  @media (max-width: 768px) {
+    #menu-btn {
+      display: block;
+    }
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      transform: translateX(-100%);
+      z-index: 1002;
+    }
+    #sidebar.active {
+      transform: translateX(0);
+    }
+    #content {
+      padding-top: 60px;
+    }
+    #overlay.active {
+      display: block;
+    }
   }
 
   @keyframes fadeSlide {
@@ -118,6 +159,9 @@
 
   <!-- BASE DE DATOS -->
   <div id="container">
+    <button id="menu-btn" onclick="toggleMenu()">☰</button>
+    <div id="overlay" onclick="toggleMenu()"></div>
+
     <div id="sidebar">
       <div class="folder" onclick="toggleFolder(this)">Espionaje
         <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
@@ -135,41 +179,39 @@
 
   <script>
     const USERS = { "Candeleros Jrs": "kyrios+1" };
-    const contents = {
-      informe1: "Detalle secreto de la operación Sombra...",
-      informe2: "Plan de infiltración nocturna...",
-      informe3: "Documentación inicial del Proyecto Fénix."
-    };
+    const contents = { informe1: "Detalle secreto de la operación Sombra...", informe2: "Plan de infiltración nocturna...", informe3: "Documentación inicial del Proyecto Fénix." };
 
     function login() {
       const u = username.value.trim(), p = password.value.trim();
-      if (USERS[u] === p) {
+      if(USERS[u] === p){
         document.getElementById('login').style.display = 'none';
         const c = document.getElementById('container');
         c.style.display = 'flex';
-        setTimeout(() => c.style.opacity = 1, 50);
+        setTimeout(()=>c.style.opacity=1,50);
         escribirBienvenida("¡Bienvenido al sistema!");
-      } else {
-        error.textContent = "Usuario o contraseña incorrecta";
-      }
+      } else error.textContent = "Usuario o contraseña incorrecta";
     }
 
-    function toggleFolder(f) {
-      f.classList.toggle("open");
-    }
-
-    function showContent(id, titulo) {
+    function toggleFolder(f){ f.classList.toggle("open"); }
+    function showContent(id, titulo){
       content.innerHTML = `<h2>${titulo}</h2><div id="editable" contenteditable="true">${contents[id]}</div>`;
+      toggleMenu(false);
     }
-
-    function escribirBienvenida(txt) {
+    function escribirBienvenida(txt){
       const d = document.getElementById('bienvenida');
       d.textContent = "";
-      let i = 0;
-      const interval = setInterval(() => {
+      let i=0;
+      const interval=setInterval(()=>{
         d.textContent += txt.charAt(i++);
-        if (i >= txt.length) clearInterval(interval);
-      }, 100);
+        if(i>=txt.length) clearInterval(interval);
+      },100);
+    }
+    function toggleMenu(force){
+      const s=document.getElementById('sidebar');
+      const o=document.getElementById('overlay');
+      if(force===false){ s.classList.remove('active'); o.classList.remove('active'); return; }
+      s.classList.toggle('active');
+      o.classList.toggle('active');
     }
   </script>
 </body>
