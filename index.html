@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIO</title>
 <style>
   body {
@@ -11,7 +10,6 @@
     background-color: #000;
     color: #fff;
     transition: background-color 0.5s;
-    overflow-x: hidden;
   }
 
   @keyframes shake {
@@ -30,9 +28,7 @@
     100% { opacity: 0; transform: translateY(-50px); }
   }
 
-  .fade-out {
-    animation: fadeOutSlideUp 0.5s forwards;
-  }
+  .fade-out { animation: fadeOutSlideUp 0.5s forwards; }
 
   /* LOGIN */
   #login {
@@ -43,15 +39,9 @@
     height: 100vh;
     opacity:0;
     animation: fadeSlide 1s forwards;
-    padding: 20px;
-    box-sizing: border-box;
   }
 
-  .input-row {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-  }
+  .input-row { display: flex; align-items: center; margin: 5px 0; }
 
   input {
     padding: 10px;
@@ -62,8 +52,8 @@
     outline: none;
   }
 
-  #username, #password { width: 100%; max-width: 250px; }
-  #password { margin-right:5px; }
+  #username { width: 220px; }
+  #password { width: 200px; margin-right:5px; }
 
   .password-container {
     display: flex;
@@ -86,35 +76,23 @@
     border: 1px solid #fff;
     color: #fff;
     cursor: pointer;
-    width: 100%;
-    max-width: 250px;
   }
   button:hover { background-color: #222; }
 
-  #error { color: red; margin-top:5px; font-weight: bold; text-align:center; }
+  #error {
+    color: red;
+    margin-top:5px;
+    font-weight: bold;
+    text-align:center;
+  }
 
   /* CONTAINER */
   #container {
     display: flex;
-    flex-direction: column;
     height: 100vh;
     display: none;
     opacity:0;
     transition: opacity 0.5s;
-  }
-
-  #menu-btn {
-    display: none;
-    font-size: 24px;
-    padding: 10px;
-    background-color: #111;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 200;
   }
 
   #sidebar {
@@ -123,15 +101,6 @@
     padding: 10px;
     box-sizing: border-box;
     overflow-y: auto;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    transition: transform 0.3s ease;
-  }
-
-  #sidebar.hidden {
-    transform: translateX(-260px);
   }
 
   .folder {
@@ -141,6 +110,7 @@
     border-radius:5px;
     background-color: #1a1a1a;
     transition: background-color 0.3s;
+    position: relative;
   }
   .folder:hover { background-color: #222; }
 
@@ -169,15 +139,10 @@
     flex:1;
     padding:20px;
     overflow-y:auto;
-    margin-left:250px;
-    transition: margin-left 0.3s;
   }
 
-  #sidebar.hidden + #content {
-    margin-left: 0;
-  }
+  h2 { margin-top:0; }
 
-  h2 { margin-top:50px; }
   #editable {
     background-color:#000;
     border:1px solid #fff;
@@ -196,24 +161,35 @@
 
   .shake { animation: shake 0.4s; }
 
-  /* Responsive */
+  /* BOTÓN MENÚ SOLO EN CELULAR */
+  #menu-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    background: #111;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+
+  /* SOLO EN CELULAR */
   @media (max-width: 768px) {
-    #menu-btn {
-      display: block;
-    }
+    #menu-btn { display: block; }
     #sidebar {
       position: fixed;
       top: 0;
-      left: 0;
-      height: 100%;
-      z-index: 150;
+      left: -250px;
+      height: 100vh;
+      transition: left 0.3s ease;
+      z-index: 999;
     }
-    #content {
-      margin-left: 0;
-      padding-top: 60px;
-    }
+    #sidebar.open { left: 0; }
+    #content { padding-top: 50px; }
   }
-
 </style>
 </head>
 <body>
@@ -235,7 +211,7 @@
 <!-- BASE DE DATOS -->
 <div id="container">
   <button id="menu-btn" onclick="toggleMenu()">☰</button>
-  <div id="sidebar" class="hidden">
+  <div id="sidebar">
     <div class="folder" onclick="toggleFolder(this)">Espionaje
       <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
       <div class="subfolder" onclick="showContent('informe2','Infiltración Nocturna')">Infiltración Nocturna</div>
@@ -337,8 +313,6 @@
       <h2>${titulo}</h2>
       <div id="editable" contenteditable="true">${contents[id]}</div>
     `;
-    // Cierra menú automáticamente en móviles
-    if (window.innerWidth <= 768) toggleMenu();
   }
 
   function escribirBienvenida(texto) {
@@ -353,14 +327,11 @@
   }
 
   function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('hidden');
+    document.getElementById('sidebar').classList.toggle('open');
   }
 </script>
-
 </body>
 </html>
-
 
 
 
