@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -20,10 +20,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: absolute; /* Estilo de escritorio */
-      top: 50%; /* Estilo de escritorio */
-      left: 50%; /* Estilo de escritorio */
-      transform: translate(-50%, -50%); /* Estilo de escritorio */
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
       background-color: #000;
       border: 1px solid #444;
       padding: 40px;
@@ -102,7 +102,7 @@
 
     /* Estilos de la BASE DE DATOS */
     #container {
-      display: none; /* Oculto inicialmente, se muestra después del login */
+      display: none; 
       display: flex;
       min-height: 100vh;
       opacity: 0;
@@ -110,7 +110,7 @@
     }
 
     #sidebar {
-      width: 250px; /* Estilo de escritorio */
+      width: 250px; 
       background-color: #222;
       padding: 15px;
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
@@ -145,7 +145,6 @@
       font-weight: normal;
       overflow: hidden;
 
-      /* Animación de subcarpetas (escritorio) */
       max-height: 0;
       opacity: 0;
       transform: translateY(-10px);
@@ -192,16 +191,14 @@
       20%, 60% { transform: translateX(-10px); }
       40%, 80% { transform: translateX(10px); }
     }
-    
-    /* === CAMBIOS PARA MÓVIL (MENÚ DE HAMBURGUESA Y LOGIN NORMAL) === */
-    
-    /* El CSS para el botón de menú que solo aparece en móvil (oculto por defecto) */
+
+    /* Estilos del botón de menú (oculto por defecto en escritorio) */
     #menu-toggle {
-        display: none; /* Oculto por defecto en escritorio */
+        display: none; 
         position: fixed;
         top: 15px;
         left: 15px;
-        z-index: 1001; /* Para que esté por encima de todo */
+        z-index: 1001;
         background: #333;
         color: #fff;
         border: none;
@@ -211,58 +208,49 @@
         border-radius: 5px;
     }
 
-    /* Media Query: Se aplica a pantallas de 768px o menos (móviles) */
+    /* Media Query para dispositivos móviles (hasta 768px de ancho) */
     @media (max-width: 768px) {
         
-        /* --- LOGIN EN PANTALLA NORMAL (para móvil) --- */
+        /* Adaptación del LOGIN */
         #login {
-            /* Eliminamos las propiedades de centrado absoluto/transform */
             position: static;
             top: auto;
             left: auto;
             transform: none;
-            
-            /* Ocupa todo el ancho y alto del contenedor para verse normal */
             width: 90%;
             max-width: 350px; 
-            padding: 20px;
-            margin: 50px auto; /* Centrado en la página */
+            margin: 50px auto; 
         }
 
-        /* Hacemos que la animación de login sea más simple en móvil */
         #login.fade-slide {
             animation: none; 
             opacity: 1;
         }
         
-        /* --- CONFIGURACIÓN DE LA BARRA LATERAL COMO MENÚ (para móvil) --- */
+        /* Adaptación de la BARRA LATERAL (Menú de hamburguesa) */
         
-        /* 1. Mostrar el botón de menú */
         #menu-toggle {
             display: block; 
         }
         
-        /* 2. Ocultar la barra lateral por defecto y hacerla de pantalla completa */
         #sidebar {
-            width: 80%; /* Un poco más de espacio en los lados */
+            width: 80%;
             height: 100vh;
             position: fixed;
-            left: -100%; /* Oculta la barra fuera de la pantalla */
+            left: -100%; 
             top: 0;
-            z-index: 1000; /* Asegura que cubra el contenido */
+            z-index: 1000;
             transition: left 0.3s ease-in-out;
-            padding-top: 60px; /* Espacio para el botón de menú/barra superior */
+            padding-top: 60px;
         }
         
-        /* 3. Clase para mostrar la barra lateral (se aplica con JavaScript) */
         #sidebar.open {
-            left: 0; /* Muestra la barra */
+            left: 0; 
         }
 
-        /* 4. El contenido principal debe tener un margen para no estar debajo del botón/menú */
         #content {
             padding-left: 15px; 
-            padding-top: 60px; /* Espacio para que el contenido no quede debajo del menú */
+            padding-top: 60px; 
         }
         
     }
@@ -328,10 +316,6 @@ Inicie sesión para acceder a la Base de Datos.
   </div>
 
   <script>
-    // ------------------------------------------------------------------
-    //                     OBJETO DE INFORMES
-    // ------------------------------------------------------------------
-
     const reports = {
       'informe1': 'Operación Sombra: El objetivo A ha sido localizado. Se recomienda acción inmediata. Código: ROJO',
       'informe2': 'Infiltración Nocturna: La unidad Beta ha fallado en la extracción. Pérdidas mínimas. Reagrupación en sector 7.',
@@ -346,10 +330,6 @@ Inicie sesión para acceder a la Base de Datos.
       'informe11': 'Agente Z: Estado: En espera. Especialidad: Análisis de datos. Nivel de Acceso: Gamma.',
       'informe12': 'Archivo Gamma: Lista de contactos y colaboradores externos. Requiere autenticación de nivel 5.'
     };
-
-    // ------------------------------------------------------------------
-    //                     FUNCIONES DE LA INTERFAZ
-    // ------------------------------------------------------------------
 
     function togglePassword() {
       const passwordInput = document.getElementById('password');
@@ -367,7 +347,7 @@ Inicie sesión para acceder a la Base de Datos.
       element.classList.toggle('open');
     }
 
-  
+    // Función para el menú de hamburguesa
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('open');
@@ -380,13 +360,12 @@ Inicie sesión para acceder a la Base de Datos.
       const loginBox = document.getElementById('login');
       const container = document.getElementById('container');
 
-      // Credenciales de ejemplo (¡Cámbialas por algo seguro en un entorno real!)
       if (username === 'admin' && password === '1234') {
         loginBox.style.display = 'none';
         container.style.display = 'flex';
         setTimeout(() => {
           container.style.opacity = '1';
-        }, 50); // Pequeño retraso para la transición
+        }, 50); 
       } else {
         errorElement.textContent = 'Acceso Denegado. Credenciales Inválidas.';
         errorElement.style.visibility = 'visible';
@@ -401,16 +380,14 @@ Inicie sesión para acceder a la Base de Datos.
       document.getElementById('title').textContent = title;
       document.getElementById('editable').textContent = reports[informeId] || 'Contenido no encontrado.';
       
-      // Opcional: Modificar el estado del contenteditable
-      if (informeId === 'informe7') { // Ejemplo: hacer un archivo no editable
+      if (informeId === 'informe7') { 
         document.getElementById('editable').contentEditable = 'false';
       } else {
         document.getElementById('editable').contentEditable = 'true';
       }
 
-      // NUEVO: Cerrar el menú si está abierto (solo en móvil)
+      // Cierra el menú en móvil al seleccionar una opción
       const sidebar = document.getElementById('sidebar');
-      // Verificamos si la pantalla es pequeña (<= 768px)
       if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
           sidebar.classList.remove('open');
       }
@@ -418,3 +395,4 @@ Inicie sesión para acceder a la Base de Datos.
   </script>
 </body>
 </html>
+
