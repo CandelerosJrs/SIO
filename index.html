@@ -1,398 +1,272 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIO - Sistema de Inteligencia Operativa</title>
-  <style>
-    body {
-      background-color: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<title>Login DSI</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Courier New", monospace;
+    background-color: #000;
+    color: #fff;
+    transition: background-color 0.5s;
+  }
 
-    /* Estilos del LOGIN */
-    #login {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: absolute; 
-      top: 50%; 
-      left: 50%; 
-      transform: translate(-50%, -50%); 
-      background-color: #000;
-      border: 1px solid #444;
-      padding: 40px;
-      border-radius: 10px;
-      width: 300px;
-      z-index: 10;
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-      opacity: 1;
-    }
+  @keyframes shake {
+    0%,100% { transform: translate(0,0); }
+    10%,30%,50%,70%,90% { transform: translate(-15px, 0); }
+    20%,40%,60%,80% { transform: translate(15px, 0); }
+  }
 
-    .fade-slide {
-      animation: fadeSlideIn 0.8s ease-out;
-    }
+  @keyframes fadeSlide {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translate(-50%, -60%); }
-      to { opacity: 1; transform: translate(-50%, -50%); }
-    }
+  /* LOGIN */
+  #login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    opacity:0;
+    animation: fadeSlide 1s forwards;
+  }
 
-    #login h2 {
-      color: #0f0;
-      margin-bottom: 30px;
-      text-shadow: 0 0 5px #0f0;
-    }
+  .input-row {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+  }
 
-    .input-row {
-      width: 100%;
-      margin-bottom: 15px;
-    }
+  input {
+    padding: 10px;
+    background-color: #111;
+    border: 1px solid #fff;
+    color: #fff;
+    font-family: "Courier New", monospace;
+    outline: none;
+  }
 
-    #login input[type="text"], #login input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      background-color: #333;
-      border: 1px solid #555;
-      color: #fff;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
+  #username { width: 220px; }
+  #password { width: 200px; margin-right:5px; }
 
-    .password-container {
-      position: relative;
-    }
+  .password-container {
+    display: flex;
+    align-items: center;
+  }
 
-    .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #aaa;
-    }
+  .toggle-password {
+    cursor: pointer;
+    user-select: none;
+    color: #fff;
+    padding: 5px;
+    border: 1px solid #fff;
+    background-color: #111;
+  }
 
-    #login button {
-      background-color: #0f0;
-      color: #000;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
+  button {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #111;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover { background-color: #222; }
 
-    #login button:hover {
-      background-color: #3f3;
-    }
+  #error { color: red; margin-top:5px; font-weight: bold; text-align:center; }
 
-    #error {
-      color: #f00;
-      margin-top: 15px;
-      visibility: hidden;
-      font-size: 0.9rem;
-    }
+  /* CONTAINER */
+  #container {
+    display: flex;
+    height: 100vh;
+    display: none;
+  }
 
-    /* Estilos de la BASE DE DATOS */
-    #container {
-      display: none; 
-      display: flex;
-      min-height: 100vh;
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
+  #sidebar {
+    width: 250px;
+    background-color: #111;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
 
-    #sidebar {
-      width: 250px; 
-      background-color: #222;
-      padding: 15px;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-      flex-shrink: 0;
-    }
+  .folder {
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom:5px;
+    border-radius:5px;
+    background-color: #1a1a1a;
+    transition: background-color 0.3s;
+    position: relative;
+  }
+  .folder:hover { background-color: #222; }
 
-    .folder {
-      color: #0f0;
-      padding: 10px;
-      margin-bottom: 5px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-      font-weight: bold;
-      border-left: 3px solid transparent;
-    }
+  .subfolder {
+    padding: 8px 10px;
+    margin: 2px 0;
+    border-radius:5px;
+    background-color: #151515;
+    overflow: hidden;
+    max-height: 0;
+    opacity:0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    margin-left:20px;
+  }
 
-    .folder:hover {
-      background-color: #333;
-      border-left: 3px solid #0f0;
-    }
+  .folder.open .subfolder {
+    max-height: 100px;
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    .folder.open {
-      border-left: 3px solid #0f0;
-    }
+  .subfolder:hover { background-color: #222; }
 
-    .subfolder {
-      color: #ccc;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 3px;
-      font-weight: normal;
-      overflow: hidden;
+  #content {
+    flex:1;
+    padding:20px;
+    overflow-y:auto;
+  }
+  h2 { margin-top:0; }
+  #editable {
+    background-color:#000;
+    border:1px solid #fff;
+    padding:10px;
+    min-height:200px;
+    color:#fff;
+    font-family:"Courier New", monospace;
+    white-space: pre-wrap;
+  }
 
-      max-height: 0;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.4s ease;
-      margin-left: 20px;
-    }
+  .bienvenida {
+    font-size: 1.5rem;
+    white-space: pre-wrap;
+    overflow: hidden;
+  }
 
-    .folder.open .subfolder {
-      max-height: 100px;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .subfolder:hover { background-color: #333; }
-
-    #content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    h2 { margin-top: 0; }
-
-    #editable {
-      background-color: #000;
-      border: 1px solid #fff;
-      padding: 10px;
-      min-height: 200px;
-      color: #fff;
-      font-family: "Courier New", monospace;
-      white-space: pre-wrap;
-    }
-
-    .bienvenida {
-      font-size: 1.5rem;
-      white-space: pre-wrap;
-      overflow: hidden;
-    }
-
-    .shake { animation: shake 0.4s; }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-10px); }
-      40%, 80% { transform: translateX(10px); }
-    }
-
-    /* Estilos del botón de menú (oculto por defecto en escritorio) */
-    #menu-toggle {
-        display: none; 
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        z-index: 1001;
-        background: #333;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1.5rem;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-
-    /* Media Query para dispositivos móviles (hasta 768px de ancho) */
-    @media (max-width: 768px) {
-        
-        /* Adaptación del LOGIN */
-        #login {
-            position: static;
-            top: auto;
-            left: auto;
-            transform: none;
-            width: 90%;
-            max-width: 350px; 
-            margin: 50px auto; 
-        }
-
-        #login.fade-slide {
-            animation: none; 
-            opacity: 1;
-        }
-        
-        /* Adaptación de la BARRA LATERAL (Menú de hamburguesa) */
-        
-        #menu-toggle {
-            display: block; 
-        }
-        
-        #sidebar {
-            width: 80%;
-            height: 100vh;
-            position: fixed;
-            left: -100%; 
-            top: 0;
-            z-index: 1000;
-            transition: left 0.3s ease-in-out;
-            padding-top: 60px;
-        }
-        
-        #sidebar.open {
-            left: 0; 
-        }
-
-        #content {
-            padding-left: 15px; 
-            padding-top: 60px; 
-        }
-        
-    }
-  </style>
+  .shake { animation: shake 0.4s; }
+</style>
 </head>
 <body>
 
-  <div id="login" class="fade-slide">
-    <h2>SIO</h2>
-    <div class="input-row">
-      <input type="text" id="username" placeholder="Usuario">
-    </div>
-    <div class="input-row password-container">
-      <input type="password" id="password" placeholder="Contraseña">
-      <span class="toggle-password" onclick="togglePassword()">👁</span>
-    </div>
-    <button onclick="login()">Entrar</button>
-    <p id="error"></p>
+<!-- LOGIN -->
+<div id="login" class="fade-slide">
+  <h2>Login DSI</h2>
+  <div class="input-row">
+    <input type="text" id="username" placeholder="Usuario">
   </div>
+  <div class="input-row password-container">
+    <input type="password" id="password" placeholder="Contraseña">
+    <span class="toggle-password" onclick="togglePassword()">👁</span>
+  </div>
+  <button onclick="login()">Entrar</button>
+  <p id="error"></p>
+</div>
 
-  <div id="container">
-    
-    <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
-
-    <div id="sidebar">
-      <div class="folder" onclick="toggleFolder(this)">
-        Espionaje
-        <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
-        <div class="subfolder" onclick="showContent('informe2','Infiltración Nocturna')">Infiltración Nocturna</div>
-        <div class="subfolder" onclick="showContent('informe9','Observación Urbana')">Observación Urbana</div>
-      </div>
-
-      <div class="folder" onclick="toggleFolder(this)">
-        Proyectos
-        <div class="subfolder" onclick="showContent('informe3','Proyecto Fénix')">Proyecto Fénix</div>
-        <div class="subfolder" onclick="showContent('informe4','Proyecto Lobo')">Proyecto Lobo</div>
-        <div class="subfolder" onclick="showContent('informe10','Proyecto Águila')">Proyecto Águila</div>
-      </div>
-
-      <div class="folder" onclick="toggleFolder(this)">
-        Miembros
-        <div class="subfolder" onclick="showContent('informe5','Agente X')">Agente X</div>
-        <div class="subfolder" onclick="showContent('informe6','Agente Y')">Agente Y</div>
-        <div class="subfolder" onclick="showContent('informe11','Agente Z')">Agente Z</div>
-      </div>
-
-      <div class="folder" onclick="toggleFolder(this)">
-        Confidencial
-        <div class="subfolder" onclick="showContent('informe7','Archivo Romeo')">Archivo Romeo</div>
-        <div class="subfolder" onclick="showContent('informe8','Archivo Beta')">Archivo Beta</div>
-        <div class="subfolder" onclick="showContent('informe12','Archivo Gamma')">Archivo Gamma</div>
-      </div>
+<!-- BASE DE DATOS -->
+<div id="container">
+  <div id="sidebar">
+    <div class="folder" onclick="toggleFolder(this)">Espionaje
+      <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
+      <div class="subfolder" onclick="showContent('informe2','Infiltración Nocturna')">Infiltración Nocturna</div>
+      <div class="subfolder" onclick="showContent('informe9','Observación Urbana')">Observación Urbana</div>
     </div>
-
-    <div id="content">
-      <h2 id="title">Bienvenido al SIO</h2>
-      <div id="editable" class="bienvenida" contenteditable="false">
-Hola, Agente.
-
-Inicie sesión para acceder a la Base de Datos.
-      </div>
+    <div class="folder" onclick="toggleFolder(this)">Proyectos
+      <div class="subfolder" onclick="showContent('informe3','Proyecto Fénix')">Proyecto Fénix</div>
+      <div class="subfolder" onclick="showContent('informe4','Proyecto Lobo')">Proyecto Lobo</div>
+      <div class="subfolder" onclick="showContent('informe10','Proyecto Águila')">Proyecto Águila</div>
+    </div>
+    <div class="folder" onclick="toggleFolder(this)">Miembros
+      <div class="subfolder" onclick="showContent('informe5','Agente X')">Agente X</div>
+      <div class="subfolder" onclick="showContent('informe6','Agente Y')">Agente Y</div>
+      <div class="subfolder" onclick="showContent('informe11','Agente Z')">Agente Z</div>
+    </div>
+    <div class="folder" onclick="toggleFolder(this)">Confidencial
+      <div class="subfolder" onclick="showContent('informe7','Archivo Alfa')">Archivo Romeo</div>
+      <div class="subfolder" onclick="showContent('informe8','Archivo Beta')">Archivo Beta</div>
+      <div class="subfolder" onclick="showContent('informe12','Archivo Gamma')">Archivo Gamma</div>
+    </div>
+    <div class="folder" onclick="toggleFolder(this)">Documentación
+      <div class="subfolder" onclick="showContent('informe13','Manual de Procedimientos')">Manual de Procedimientos</div>
+      <div class="subfolder" onclick="showContent('informe14','Guía de Operaciones')">Guía de Operaciones</div>
     </div>
   </div>
 
-  <script>
-    const reports = {
-      'informe1': 'Operación Sombra: El objetivo A ha sido localizado. Se recomienda acción inmediata. Código: ROJO',
-      'informe2': 'Infiltración Nocturna: La unidad Beta ha fallado en la extracción. Pérdidas mínimas. Reagrupación en sector 7.',
-      'informe3': 'Proyecto Fénix: Fase 3 completada. Se requiere mayor inversión en criptografía avanzada.',
-      'informe4': 'Proyecto Lobo: Desarrollo de drones autónomos listo para pruebas de campo. Fecha: 15/11/2025.',
-      'informe5': 'Agente X: Estado: Activo. Especialidad: Infiltración silenciosa. Nivel de Acceso: Delta.',
-      'informe6': 'Agente Y: Estado: Retirado. Razón: Exposición. Archivo clasificado.',
-      'informe7': 'Archivo Romeo: Datos sobre la organización rival "El Consorcio". Máxima confidencialidad.',
-      'informe8': 'Archivo Beta: Protocolos de seguridad post-brecha. Revisar cada trimestre.',
-      'informe9': 'Observación Urbana: Patrullas diarias en zona de interés. Actividad anómala detectada en sector 4.',
-      'informe10': 'Proyecto Águila: Desarrollo de contramedidas electromagnéticas. Estado: En pausa temporal.',
-      'informe11': 'Agente Z: Estado: En espera. Especialidad: Análisis de datos. Nivel de Acceso: Gamma.',
-      'informe12': 'Archivo Gamma: Lista de contactos y colaboradores externos. Requiere autenticación de nivel 5.'
-    };
+  <div id="content">
+    <div id="bienvenida" class="bienvenida"></div>
+  </div>
+</div>
 
-    function togglePassword() {
-      const passwordInput = document.getElementById('password');
-      const toggleIcon = document.querySelector('.toggle-password');
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.textContent = '🔒';
-      } else {
-        passwordInput.type = 'password';
-        toggleIcon.textContent = '👁';
-      }
+<script>
+  const USERS = { "Candeleros Jrs": "1234" };
+
+  const contents = {
+    informe1: "Detalle secreto de la operación Sombra...",
+    informe2: "Plan de infiltración nocturna...",
+    informe3: "Documentación inicial del Proyecto Fénix.",
+    informe4: "Avances sobre el Proyecto Lobo.",
+    informe5: "Actividad del agente X bajo cobertura.",
+    informe6: "Informe de seguimiento del agente Y.",
+    informe7: "Archivo confidencial Alfa.",
+    informe8: "Archivo confidencial Beta.",
+    informe9: "Observaciones urbanas y movimientos sospechosos...",
+    informe10: "Planeación estratégica del Proyecto Águila.",
+    informe11: "Reporte de actividades del Agente Z.",
+    informe12: "Archivo ultra secreto Gamma.",
+    informe13: "Manual completo de procedimientos internos.",
+    informe14: "Guía de operaciones y protocolos de seguridad."
+  };
+
+  function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const loginDiv = document.getElementById('login');
+    const errorDiv = document.getElementById('error');
+
+    if(USERS[username] && USERS[username] === password) {
+      errorDiv.textContent = "";
+      loginDiv.style.display = 'none';
+      document.getElementById('container').style.display = 'flex';
+      escribirBienvenida("¡Bienvenido al sistema!");
+    } else {
+      errorDiv.textContent = "Usuario o contraseña incorrecta";
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 400);
     }
+  }
 
-    function toggleFolder(element) {
-      element.classList.toggle('open');
-    }
+  function togglePassword() {
+    const pass = document.getElementById('password');
+    pass.type = pass.type === 'password' ? 'text' : 'password';
+  }
 
-    // Función para el menú de hamburguesa
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('open');
-    }
+  function toggleFolder(folder) {
+    folder.classList.toggle("open");
+  }
 
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const errorElement = document.getElementById('error');
-      const loginBox = document.getElementById('login');
-      const container = document.getElementById('container');
+  function showContent(id, titulo) {
+    document.getElementById('content').innerHTML = `
+      <h2>${titulo}</h2>
+      <div id="editable" contenteditable="true">${contents[id]}</div>
+    `;
+  }
 
-      if (username === 'admin' && password === '1234') {
-        loginBox.style.display = 'none';
-        container.style.display = 'flex';
-        setTimeout(() => {
-          container.style.opacity = '1';
-        }, 50); 
-      } else {
-        errorElement.textContent = 'Acceso Denegado. Credenciales Inválidas.';
-        errorElement.style.visibility = 'visible';
-        loginBox.classList.add('shake');
-        setTimeout(() => {
-          loginBox.classList.remove('shake');
-        }, 400);
-      }
-    }
+  function escribirBienvenida(texto) {
+    const div = document.getElementById('bienvenida');
+    div.textContent = "";
+    let i = 0;
+    const interval = setInterval(() => {
+      div.textContent += texto.charAt(i);
+      i++;
+      if(i >= texto.length) clearInterval(interval);
+    }, 100);
+  }
+</script>
 
-    function showContent(informeId, title) {
-      document.getElementById('title').textContent = title;
-      document.getElementById('editable').textContent = reports[informeId] || 'Contenido no encontrado.';
-      
-      if (informeId === 'informe7') { 
-        document.getElementById('editable').contentEditable = 'false';
-      } else {
-        document.getElementById('editable').contentEditable = 'true';
-      }
-
-      // Cierra el menú en móvil al seleccionar una opción
-      const sidebar = document.getElementById('sidebar');
-      if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
-          sidebar.classList.remove('open');
-      }
-    }
-  </script>
 </body>
 </html>
+
 
