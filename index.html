@@ -2,13 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Login DSI</title>
+<title>Login SIO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   body {
     margin: 0;
     font-family: "Courier New", monospace;
     background-color: #000;
     color: #fff;
+    overflow-x: hidden;
     transition: background-color 0.5s;
   }
 
@@ -23,6 +25,11 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes startFade {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
   /* LOGIN */
   #login {
     display: flex;
@@ -30,7 +37,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    opacity:0;
+    opacity: 0;
     animation: fadeSlide 1s forwards;
   }
 
@@ -80,9 +87,10 @@
 
   /* CONTAINER */
   #container {
-    display: flex;
-    height: 100vh;
     display: none;
+    height: 100vh;
+    opacity: 0;
+    animation: startFade 1s forwards;
   }
 
   #sidebar {
@@ -91,6 +99,7 @@
     padding: 10px;
     box-sizing: border-box;
     overflow-y: auto;
+    transition: transform 0.4s ease;
   }
 
   .folder {
@@ -130,7 +139,9 @@
     padding:20px;
     overflow-y:auto;
   }
+
   h2 { margin-top:0; }
+
   #editable {
     background-color:#000;
     border:1px solid #fff;
@@ -148,13 +159,49 @@
   }
 
   .shake { animation: shake 0.4s; }
+
+  /* MENU HAMBURGUESA */
+  #menu-btn {
+    display: none;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #111;
+    border: 1px solid #fff;
+    color: #fff;
+    font-size: 22px;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    #login h2 { font-size: 2rem; }
+    input, button { font-size: 1.2rem; padding: 15px; }
+    #username, #password { width: 80vw; }
+    .toggle-password { font-size: 1.3rem; }
+    #menu-btn { display: block; }
+    #sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      transform: translateX(-100%);
+      width: 230px;
+      z-index: 5;
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+  }
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login" class="fade-slide">
-  <h2>Login DSI</h2>
+  <h2>Login SIO</h2>
   <div class="input-row">
     <input type="text" id="username" placeholder="Usuario">
   </div>
@@ -168,6 +215,7 @@
 
 <!-- BASE DE DATOS -->
 <div id="container">
+  <button id="menu-btn" onclick="toggleMenu()">☰</button>
   <div id="sidebar">
     <div class="folder" onclick="toggleFolder(this)">Espionaje
       <div class="subfolder" onclick="showContent('informe1','Operación Sombra')">Operación Sombra</div>
@@ -185,7 +233,7 @@
       <div class="subfolder" onclick="showContent('informe11','Agente Z')">Agente Z</div>
     </div>
     <div class="folder" onclick="toggleFolder(this)">Confidencial
-      <div class="subfolder" onclick="showContent('informe7','Archivo Alfa')">Archivo Romeo</div>
+      <div class="subfolder" onclick="showContent('informe7','Archivo Romeo')">Archivo Romeo</div>
       <div class="subfolder" onclick="showContent('informe8','Archivo Beta')">Archivo Beta</div>
       <div class="subfolder" onclick="showContent('informe12','Archivo Gamma')">Archivo Gamma</div>
     </div>
@@ -201,7 +249,20 @@
 </div>
 
 <script>
-  const USERS = { "Candeleros Jrs": "1234" };
+  const USERS = { 
+  "Candeleros Jrs": "1234",
+  "Dragón": "A1jhjc-PPL17@-1289": "clave01",
+  "Rx": "Lcx_ASG03",
+  "Charlie": "clave03",
+  "Delta": "clave04",
+  "Echo": "clave05",
+  "Foxtrot": "clave06",
+  "Golf": "clave07",
+  "Hotel": "clave08",
+  "India": "clave09",
+  "Juliet": "clave10"
+};
+
 
   const contents = {
     informe1: "Detalle secreto de la operación Sombra...",
@@ -210,7 +271,7 @@
     informe4: "Avances sobre el Proyecto Lobo.",
     informe5: "Actividad del agente X bajo cobertura.",
     informe6: "Informe de seguimiento del agente Y.",
-    informe7: "Archivo confidencial Alfa.",
+    informe7: "Archivo confidencial Romeo.",
     informe8: "Archivo confidencial Beta.",
     informe9: "Observaciones urbanas y movimientos sospechosos...",
     informe10: "Planeación estratégica del Proyecto Águila.",
@@ -224,13 +285,18 @@
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     const loginDiv = document.getElementById('login');
+    const container = document.getElementById('container');
     const errorDiv = document.getElementById('error');
 
-    if(USERS[username] && USERS[username] === password) {
+    if (USERS[username] && USERS[username] === password) {
       errorDiv.textContent = "";
-      loginDiv.style.display = 'none';
-      document.getElementById('container').style.display = 'flex';
-      escribirBienvenida("¡Bienvenido al sistema!");
+      loginDiv.style.animation = "fadeSlide 0.5s reverse forwards";
+      setTimeout(() => {
+        loginDiv.style.display = 'none';
+        container.style.display = 'flex';
+        container.style.opacity = '1';
+        escribirBienvenida("¡Bienvenido al sistema SIO!");
+      }, 600);
     } else {
       errorDiv.textContent = "Usuario o contraseña incorrecta";
       document.body.classList.add('shake');
@@ -252,6 +318,7 @@
       <h2>${titulo}</h2>
       <div id="editable" contenteditable="true">${contents[id]}</div>
     `;
+    if (window.innerWidth < 768) toggleMenu(); // cerrar menú al elegir en móvil
   }
 
   function escribirBienvenida(texto) {
@@ -264,9 +331,14 @@
       if(i >= texto.length) clearInterval(interval);
     }, 100);
   }
+
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
 </script>
 
 </body>
 </html>
+
 
 
